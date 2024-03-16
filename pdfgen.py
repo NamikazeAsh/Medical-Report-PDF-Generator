@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Spacer, Paragraph
@@ -160,6 +160,8 @@ def create_pdf(filename, lab,categories):
     data = []
     story = []
     random_id = ''.join(str(random.randint(0, 9)) for _ in range(6))
+    random_specimen_collected = (datetime.now() - timedelta(days=random.randint(0, 14))).strftime("%Y-%m-%d")
+    report_date = random_specimen_collected
     
     data.append(["Test", "Result", "Reference Range", "Unit"])
     
@@ -185,26 +187,17 @@ def create_pdf(filename, lab,categories):
     def draw_header(canvas, doc):
         canvas.saveState()
 
-        header_image_path = "images/header_E.png"
-        canvas.drawImage(header_image_path, 35, 710, width=500, height=80)
+        header_image_path = "images/header_A.png"
+        canvas.drawImage(header_image_path, 0, 710, width=610, height=80)
         
-        footer_image_path = "images/footer_E.png"
-        canvas.drawImage(footer_image_path, 30, 0, width=580, height=50)
+        footer_image_path = "images/footer_A.png"
+        canvas.drawImage(footer_image_path, 30, 0, width=300, height=70)
         
-        top_padding = Spacer(1, 0.69 * inch)
+        top_padding = Spacer(1, 0.4 * inch)
         story.insert(0, top_padding)
         
         styles = getSampleStyleSheet()
         style_normal = styles['Normal']
-
-        
-        random_specimen_collected = datetime.now().strftime("%Y-%m-%d")
-        report_date = random_specimen_collected
-        
-        # Define the styles
-        styles = getSampleStyleSheet()
-        style_normal = styles['Normal']
-        style_center = ParagraphStyle(name='Center', parent=style_normal, alignment=1)
         
         # Details to display in the table
         data = [
