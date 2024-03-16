@@ -163,7 +163,7 @@ def create_pdf(filename, lab,categories):
     random_specimen_collected = (datetime.now() - timedelta(days=random.randint(0, 14))).strftime("%Y-%m-%d")
     report_date = random_specimen_collected
     
-    data.append(["Test", "Result", "Reference Range", "Unit"])
+    
     
     for category, tests in categories.items():
         category_header_style = ParagraphStyle(name='CategoryHeader', fontName='Helvetica-Bold', underline=True,fontSize=12)
@@ -180,24 +180,33 @@ def create_pdf(filename, lab,categories):
             row = [test_name, result, ref_range, unit]
             data.append(row)
             
-            
-    col_widths = [320, 80, 80, 100, 100]
+    
     
     def draw_header(canvas, doc):
+        
+        table_style3 = [
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
+            ('GRID', (0, 0), (-1, -1), 0, colors.white),
+            ('LINEABOVE', (0, 0), (-1, 0), 0.3, colors.black),  # Line above header row
+            ('LINEBELOW', (0, 0), (-1, 0), 0.3, colors.black),
+        ]
+        header_row = ['Test', 'Result', 'Reference Range', 'Unit']    
+        header_table = Table([header_row], style=table_style3, colWidths=[300, 80, 100, 100])
+        story.insert(0,header_table)
+        story.insert(1, Spacer(0, 0.1 * inch))
+        
         canvas.saveState()
-
-        header_image_path = "images/header_A.png"
+        header_image_path = "images/header_D.png"
         canvas.drawImage(header_image_path, 0, 710, width=610, height=80)
-        
-        footer_image_path = "images/footer_A.png"
-        canvas.drawImage(footer_image_path, 30, 0, width=300, height=70)
-        
-        top_padding = Spacer(1, 0.4 * inch)
+        footer_image_path = "images/footer_D.png"
+        canvas.drawImage(footer_image_path, 30, 0, width=120, height=70)
+        top_padding = Spacer(1, 0.1 * inch)
         story.insert(0, top_padding)
-        
         styles = getSampleStyleSheet()
         style_normal = styles['Normal']
-        
         data = [
             ['Name:', '', ''],
             ['Gender/Age:', '', ''],
@@ -205,8 +214,7 @@ def create_pdf(filename, lab,categories):
             ['Specimen collected:', '', random_specimen_collected],
             ['Report date:', '', report_date]
         ]
-
-        table_style = [
+        table_style2 = [
             ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
@@ -223,22 +231,23 @@ def create_pdf(filename, lab,categories):
             ('TOPPADDING', (0, 0), (-1, -1), 3),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
         ]
-
-        table = Table(data, style=table_style)
-        
-        story.insert(0,table)
+        table2 = Table(data, style=table_style2,colWidths=[390,80,80])
+        story.insert(0,table2)
         
         top_padding = Spacer(1, 0.3 * inch)
         story.insert(0, top_padding)
-    
-    table = Table(data, colWidths=col_widths)
-    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.white),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
-                        ('BACKGROUND', (0, 1), (-1, -1), colors.white),
-                        ('GRID', (0, 0), (-1, -1), 0, colors.white)]))
+        
+        
+        
+    table = Table(data, colWidths=[300, 80, 100, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
+        ('GRID', (0, 0), (-1, -1), 0, colors.white),
+    ]))
 
     story.append(Spacer(1, 0.5 * inch))
     story.append(table)
