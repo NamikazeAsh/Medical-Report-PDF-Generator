@@ -193,11 +193,11 @@ def create_pdf(filename, lab,categories):
     doc.build(story, onFirstPage=draw_header, onLaterPages=draw_header)
 
 def draw_header(canvas, doc):
-    header_image_path = "images/header_B.png"
-    canvas.drawImage(header_image_path, 0, 730, width=650, height=60)
+    header_image_path = "images/header_C.png"
+    canvas.drawImage(header_image_path, 35, 710, width=540, height=80)
     
-    footer_image_path = "images/footer_B.png"
-    canvas.drawImage(footer_image_path,50,0,width=400,height=60)
+    footer_image_path = "images/footer_C.png"
+    canvas.drawImage(footer_image_path,130,0,width=350,height=80)
 
 
 def create_pdf_with_shuffled_categories(filename, lab):
