@@ -1,3 +1,4 @@
+from datetime import datetime
 import random
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Image, Spacer, Paragraph
@@ -158,13 +159,15 @@ def create_pdf(filename, lab,categories):
     doc = SimpleDocTemplate(filename, pagesize=letter)
     data = []
     story = []
-    data.append(["Test", "Status", "Result", "Reference Range", "Unit"])
+    random_id = ''.join(str(random.randint(0, 9)) for _ in range(6))
+    
+    data.append(["Test", "Result", "Reference Range", "Unit"])
     
     for category, tests in categories.items():
         category_header_style = ParagraphStyle(name='CategoryHeader', fontName='Helvetica-Bold', underline=True,fontSize=12)
         category_header = Paragraph(category, category_header_style)
         
-        data.append([category_header, "", "", "", ""])
+        data.append([category_header, "", "", ""])
         for test, details in tests.items():
             result,status = generate_random_data(details)
             test_name = test
@@ -172,32 +175,87 @@ def create_pdf(filename, lab,categories):
             result = Paragraph(str(result), getSampleStyleSheet()["Normal"])
             ref_range = Paragraph(details.get('Reference Range', ''), getSampleStyleSheet()["Normal"])
             unit = Paragraph(details.get('Unit', ''), getSampleStyleSheet()["Normal"])
-            status = Paragraph(status, getSampleStyleSheet()["Normal"])
-            row = [test_name, status, result, ref_range, unit]
+            row = [test_name, result, ref_range, unit]
             data.append(row)
-            data.append([Spacer(1, 0.1 * inch)])
+            
             
     # Determine column widths
-    col_widths = [180, 80, 80, 100, 100]
+    col_widths = [320, 80, 80, 100, 100]
+    
+    def draw_header(canvas, doc):
+        canvas.saveState()
+
+        header_image_path = "images/header_E.png"
+        canvas.drawImage(header_image_path, 35, 710, width=500, height=80)
+        
+        footer_image_path = "images/footer_E.png"
+        canvas.drawImage(footer_image_path, 30, 0, width=580, height=50)
+        
+        top_padding = Spacer(1, 0.69 * inch)
+        story.insert(0, top_padding)
+        
+        styles = getSampleStyleSheet()
+        style_normal = styles['Normal']
+
+        
+        random_specimen_collected = datetime.now().strftime("%Y-%m-%d")
+        report_date = random_specimen_collected
+        
+        # Define the styles
+        styles = getSampleStyleSheet()
+        style_normal = styles['Normal']
+        style_center = ParagraphStyle(name='Center', parent=style_normal, alignment=1)
+        
+        # Details to display in the table
+        data = [
+            ['Name:', '', ''],
+            ['Gender/Age:', '', ''],
+            ['ID:', '', random_id],
+            ['Specimen collected:', '', random_specimen_collected],
+            ['Report date:', '', report_date]
+        ]
+
+        # Create the table style
+        table_style = [
+            ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('LINEABOVE', (0, 0), (-1, 0), 1, colors.black),  
+            ('LINEBELOW', (0, -1), (-1, -1), 1, colors.black),  
+            ('LINEBEFORE', (0, 0), (0, -1), 1, colors.black),  
+            ('LINEAFTER', (-1, 0), (-1, -1), 1, colors.black),  
+            ('BACKGROUND', (2, 0), (2, 1), colors.black),  
+            ('BACKGROUND', (0, 2), (-1, 2), colors.white),  
+            ('BACKGROUND', (0, 3), (-1, -1), colors.white),  
+            ('LEFTPADDING', (0, 0), (-1, -1), 6),
+            ('RIGHTPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 3),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+        ]
+
+        # Create the table
+        table = Table(data, style=table_style)
+        
+        story.insert(0,table)
+        
+        top_padding = Spacer(1, 0.3 * inch)
+        story.insert(0, top_padding)
     
     table = Table(data, colWidths=col_widths)
-    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.white),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                        ('BOTTOMPADDING', (0, 0), (-1, 0), 5),
                         ('BACKGROUND', (0, 1), (-1, -1), colors.white),
                         ('GRID', (0, 0), (-1, -1), 0, colors.white)]))
 
+    story.append(Spacer(1, 0.5 * inch))
     story.append(table)
     doc.build(story, onFirstPage=draw_header, onLaterPages=draw_header)
 
-def draw_header(canvas, doc):
-    header_image_path = "images/header_D.png"
-    canvas.drawImage(header_image_path, 35, 710, width=500, height=80)
-    
-    footer_image_path = "images/footer_D.png"
-    canvas.drawImage(footer_image_path,30,0,width=150,height=80)
+
 
 
 def create_pdf_with_shuffled_categories(filename, lab):

@@ -1,20 +1,19 @@
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, PageTemplate, Frame, Image
 
-def draw_header(canvas):
-    # Draw your header image here
-    header_image_path = "images/header_A.png"
-    canvas.drawImage(header_image_path, 0,0, width=650, height=50)
+def add_image(canvas, doc):
+    image_path = "your_image_path.jpg"  # Specify the path to your image
+    canvas.drawImage(image_path, 100, 100)  # Adjust the coordinates as needed
 
-def create_pdf():
-    c = canvas.Canvas("example.pdf", pagesize=letter)
+doc = SimpleDocTemplate("output.pdf", pagesize=letter)
 
-    # Draw content on each page
-    for i in range(10):  # Example: 10 pages
-        draw_header(c)
-        c.showPage()
+# Define a page template with your image added
+frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height)
+template = PageTemplate(frames=[frame], onPage=add_image)
 
-    c.save()
+# Add the page template to the document
+doc.addPageTemplates(template)
 
-if __name__ == "__main__":
-    create_pdf()
+# Now, add your content as usual
+content = []  # Your content here
+doc.build(content)
