@@ -129,10 +129,8 @@ def generate_random_data(details):
                 above_threshold = max_value + 0.1 * range_width
                 random_value = random.uniform(min_value, max_value)
 
-                # Check for exceptions
                 for key, value in exceptions.items():
                     if key in details:
-                        # Handle specific exception
                         if value == 'above':
                             return round(random.uniform(max_value, above_threshold), 2), "Abnormal"
                         elif value == 'below':
@@ -140,7 +138,6 @@ def generate_random_data(details):
                         elif value == 'normal':
                             return round(random_value, 2), "Normal"
 
-                # Generate random value within reference range
                 if random.random() < 0.1:
                     return round(random.uniform(below_threshold, min_value), 2), "Abnormal"
                 elif random.random() < 0.1:
@@ -164,7 +161,6 @@ def create_pdf(filename, lab,categories):
     data.append(["Test", "Status", "Result", "Reference Range", "Unit"])
     
     for category, tests in categories.items():
-        # Add category header
         category_header_style = ParagraphStyle(name='CategoryHeader', fontName='Helvetica-Bold', underline=True,fontSize=12)
         category_header = Paragraph(category, category_header_style)
         
@@ -182,9 +178,8 @@ def create_pdf(filename, lab,categories):
             data.append([Spacer(1, 0.1 * inch)])
             
     # Determine column widths
-    col_widths = [180, 80, 80, 100, 100]  # Adjust these values as needed
+    col_widths = [180, 80, 80, 100, 100]
     
-    # Create table
     table = Table(data, colWidths=col_widths)
     table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -195,7 +190,6 @@ def create_pdf(filename, lab,categories):
                         ('GRID', (0, 0), (-1, -1), 0, colors.white)]))
 
     story.append(table)
-    # Add table to the document
     doc.build(story, onFirstPage=draw_header, onLaterPages=draw_header)
 
 def draw_header(canvas, doc):
@@ -207,17 +201,13 @@ def draw_header(canvas, doc):
 
 
 def create_pdf_with_shuffled_categories(filename, lab):
-    # Shuffle the order of category names
     shuffled_category_names = list(categories.keys())
     random.shuffle(shuffled_category_names)
     
-    # Create a new categories dictionary with shuffled order
     shuffled_categories = {category: categories[category] for category in shuffled_category_names}
     
-    # Call create_pdf with shuffled categories
     create_pdf(filename, lab, shuffled_categories)
 
-# Generate 10 PDFs with shuffled categories
 for i in range(1, 21):
     filename = f"report_{i}.pdf"
     create_pdf_with_shuffled_categories(filename, "Lab XYZ")
