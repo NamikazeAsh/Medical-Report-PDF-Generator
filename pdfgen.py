@@ -181,7 +181,6 @@ def create_pdf(filename, lab,categories):
             data.append(row)
             
             
-    # Determine column widths
     col_widths = [320, 80, 80, 100, 100]
     
     def draw_header(canvas, doc):
@@ -199,7 +198,6 @@ def create_pdf(filename, lab,categories):
         styles = getSampleStyleSheet()
         style_normal = styles['Normal']
         
-        # Details to display in the table
         data = [
             ['Name:', '', ''],
             ['Gender/Age:', '', ''],
@@ -208,7 +206,6 @@ def create_pdf(filename, lab,categories):
             ['Report date:', '', report_date]
         ]
 
-        # Create the table style
         table_style = [
             ('FONT', (0, 0), (-1, -1), 'Helvetica', 10),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -227,7 +224,6 @@ def create_pdf(filename, lab,categories):
             ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
         ]
 
-        # Create the table
         table = Table(data, style=table_style)
         
         story.insert(0,table)
