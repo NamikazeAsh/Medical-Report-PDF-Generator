@@ -199,10 +199,10 @@ def create_pdf(filename, lab,categories):
         story.insert(1, Spacer(0, 0.1 * inch))
         
         canvas.saveState()
-        header_image_path = "images/header_D.png"
+        header_image_path = "images/header_A.png"
         canvas.drawImage(header_image_path, 0, 710, width=610, height=80)
-        footer_image_path = "images/footer_D.png"
-        canvas.drawImage(footer_image_path, 30, 0, width=120, height=70)
+        footer_image_path = "images/footer_A.png"
+        canvas.drawImage(footer_image_path, 30, 0, width=250, height=70)
         top_padding = Spacer(1, 0.1 * inch)
         story.insert(0, top_padding)
         styles = getSampleStyleSheet()
